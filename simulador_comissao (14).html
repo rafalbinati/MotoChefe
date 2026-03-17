@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="MC Comissão">
+<meta name="theme-color" content="#f2f1ef">
+<link rel="manifest" id="manifestLink">
+<title>MotoChefe — Simulador de Comissão</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f2f1ef;--card:#fff;--card2:#f8f7f5;--border:rgba(0,0,0,.08);--border2:rgba(0,0,0,.13);
+  --text:#1a1a1a;--text2:#555;--text3:#999;
+  --accent:#ff4b00;--accent2:#ff6a2a;--gold:#b8780a;--gold2:#d4920a;
+  --green:#16a34a;--red:#dc2626;--blue:#2563eb;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--text);font-family:'Barlow',sans-serif;min-height:100vh;}
+
+/* LOGIN */
+#loginScreen{min-height:100vh;display:flex;align-items:center;justify-content:center;
+  background:radial-gradient(ellipse at 50% 0%,rgba(255,75,0,.07) 0%,transparent 60%);}
+.login-box{width:380px;padding:48px 40px;background:var(--card);border:1px solid var(--border2);
+  border-radius:16px;box-shadow:0 4px 24px rgba(0,0,0,.08);}
+.login-logo{text-align:center;margin-bottom:8px;}
+.login-logo .lt{font-family:'Bebas Neue';font-size:36px;letter-spacing:4px;color:var(--accent);}
+.login-logo .ls{font-size:10px;letter-spacing:3px;color:var(--text3);text-transform:uppercase;margin-top:2px;}
+.login-logo .lsub{font-size:12px;color:var(--text3);margin-top:12px;margin-bottom:28px;}
+.ll{font-size:10px;letter-spacing:2px;color:var(--text3);text-transform:uppercase;margin-bottom:7px;display:block;}
+.lsel,.linp{width:100%;padding:11px 14px;background:var(--bg);border:1px solid var(--border2);
+  border-radius:8px;color:var(--text);font-family:'Barlow';font-size:14px;margin-bottom:14px;
+  outline:none;appearance:none;}
+.lsel:focus,.linp:focus{border-color:var(--accent);}
+.lbtn{width:100%;padding:13px;background:var(--accent);border:none;border-radius:8px;
+  color:#fff;font-family:'Barlow';font-size:14px;font-weight:700;letter-spacing:2px;
+  text-transform:uppercase;cursor:pointer;transition:.2s;margin-top:4px;}
+.lbtn:hover{background:var(--accent2);}
+.lerr{color:var(--red);font-size:12px;text-align:center;margin-top:8px;min-height:18px;}
+
+/* APP */
+#app{display:none;}
+.topbar{height:54px;background:var(--text);display:flex;align-items:center;padding:0 24px;gap:14px;
+  position:sticky;top:0;z-index:100;}
+.tlogo{font-family:'Bebas Neue';font-size:22px;letter-spacing:3px;color:var(--accent);}
+.ttitle{font-size:11px;letter-spacing:2px;color:rgba(255,255,255,.4);text-transform:uppercase;}
+.tsp{flex:1;}
+.tuser{font-size:12px;color:rgba(255,255,255,.6);}
+.tbtn{background:transparent;border:1px solid rgba(255,255,255,.2);border-radius:6px;
+  padding:5px 11px;color:rgba(255,255,255,.5);font-family:'Barlow';font-size:11px;cursor:pointer;transition:.2s;}
+.tbtn:hover{border-color:var(--accent);color:var(--accent);}
+
+main{max-width:920px;margin:0 auto;padding:28px 20px;}
+
+/* CONTROLES */
+.controles{display:flex;gap:10px;margin-bottom:22px;flex-wrap:wrap;align-items:flex-end;}
+.ctrl-group{display:flex;flex-direction:column;gap:5px;}
+.ctrl-label{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--text3);}
+.ctrl-sel{padding:9px 14px;background:var(--card);border:1px solid var(--border2);border-radius:8px;
+  color:var(--text);font-family:'Barlow';font-size:14px;font-weight:600;outline:none;appearance:none;cursor:pointer;}
+.ctrl-sel:focus{border-color:var(--accent);}
+.ctrl-btn{padding:9px 18px;background:var(--accent);border:none;border-radius:8px;
+  color:#fff;font-family:'Barlow';font-size:13px;font-weight:700;cursor:pointer;transition:.2s;height:42px;}
+.ctrl-btn:hover{background:var(--accent2);}
+
+/* VENDEDOR CARD */
+.vcard{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px 24px;
+  margin-bottom:20px;display:flex;align-items:center;gap:16px;box-shadow:0 1px 4px rgba(0,0,0,.04);}
+.vavatar{width:52px;height:52px;border-radius:50%;background:var(--accent);display:flex;
+  align-items:center;justify-content:center;font-family:'Bebas Neue';font-size:22px;color:#fff;flex-shrink:0;}
+.vinfo{flex:1;}
+.vnome{font-family:'Bebas Neue';font-size:22px;letter-spacing:1px;}
+.vloja{font-size:11px;color:var(--text3);letter-spacing:1px;text-transform:uppercase;margin-top:2px;}
+.vmes{font-size:12px;color:var(--text2);margin-top:4px;}
+.vfat{text-align:right;}
+.vfat-label{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--text3);margin-bottom:4px;}
+.vfat-val{font-family:'Bebas Neue';font-size:28px;color:var(--accent);}
+.vfat-qtd{font-size:11px;color:var(--text3);}
+
+/* SLIDER */
+.slider-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:24px 28px;
+  margin-bottom:20px;box-shadow:0 1px 4px rgba(0,0,0,.04);}
+.slider-header{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:18px;}
+.slider-val{font-family:'Bebas Neue';font-size:44px;letter-spacing:2px;color:var(--accent);line-height:1;}
+.slider-label{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--text3);margin-bottom:5px;}
+.pct-badge{display:inline-block;padding:4px 12px;border-radius:20px;font-family:'Bebas Neue';
+  font-size:16px;letter-spacing:1px;margin-top:6px;}
+.meta-box{text-align:right;}
+.meta-box .ml{font-size:10px;letter-spacing:2px;color:var(--text3);text-transform:uppercase;margin-bottom:3px;}
+.meta-box .mv{font-family:'Bebas Neue';font-size:20px;color:var(--text2);}
+
+input[type=range]{width:100%;height:8px;appearance:none;background:transparent;outline:none;cursor:pointer;margin-bottom:4px;}
+input[type=range]::-webkit-slider-runnable-track{height:8px;border-radius:4px;background:var(--border2);}
+input[type=range]::-webkit-slider-thumb{appearance:none;width:26px;height:26px;border-radius:50%;
+  background:var(--accent);margin-top:-9px;box-shadow:0 2px 8px rgba(255,75,0,.35);
+  border:3px solid #fff;transition:.1s;}
+input[type=range]:hover::-webkit-slider-thumb{transform:scale(1.12);}
+.range-wrap{position:relative;}
+.range-fill{position:absolute;top:0;left:0;height:8px;background:var(--accent);
+  border-radius:4px;pointer-events:none;opacity:.3;}
+.range-labels{display:flex;justify-content:space-between;font-size:10px;color:var(--text3);margin-top:4px;}
+
+/* FAIXAS */
+.faixas{display:flex;gap:6px;margin-top:16px;}
+.faixa{flex:1;padding:8px 4px;border-radius:8px;text-align:center;border:1.5px solid transparent;transition:.2s;}
+.faixa .fl{font-size:9px;letter-spacing:.5px;text-transform:uppercase;margin-bottom:2px;}
+.faixa .fp{font-family:'Bebas Neue';font-size:13px;}
+.faixa.f1{background:rgba(220,38,38,.05);border-color:rgba(220,38,38,.12);color:var(--red);}
+.faixa.f2{background:rgba(184,120,10,.05);border-color:rgba(184,120,10,.12);color:var(--gold);}
+.faixa.f3{background:rgba(37,99,235,.05);border-color:rgba(37,99,235,.12);color:var(--blue);}
+.faixa.f4{background:rgba(22,163,74,.05);border-color:rgba(22,163,74,.12);color:var(--green);}
+.faixa.f5{background:rgba(255,75,0,.05);border-color:rgba(255,75,0,.12);color:var(--accent);}
+.faixa.f6{background:rgba(168,85,247,.05);border-color:rgba(168,85,247,.12);color:#a855f7;}
+.faixa.ativa{transform:translateY(-2px);box-shadow:0 4px 12px rgba(0,0,0,.1);}
+.faixa.f1.ativa{background:rgba(220,38,38,.1);border-color:var(--red);}
+.faixa.f2.ativa{background:rgba(184,120,10,.1);border-color:var(--gold);}
+.faixa.f3.ativa{background:rgba(37,99,235,.1);border-color:var(--blue);}
+.faixa.f4.ativa{background:rgba(22,163,74,.1);border-color:var(--green);}
+.faixa.f5.ativa{background:rgba(255,75,0,.1);border-color:var(--accent);}
+.faixa.f6.ativa{background:rgba(168,85,247,.1);border-color:#a855f7;}
+
+/* KPIs */
+.kgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px;}
+.kpi{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px;
+  box-shadow:0 1px 3px rgba(0,0,0,.04);}
+.kpi.dest{border-top:3px solid var(--accent);}
+.kl{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--text3);margin-bottom:7px;}
+.kv{font-family:'Bebas Neue';font-size:28px;letter-spacing:1px;}
+.ks{font-size:11px;color:var(--text3);margin-top:3px;}
+
+/* PROGRESSO */
+.prog-card{background:var(--card);border:1px solid var(--border);border-radius:12px;
+  padding:18px 22px;margin-bottom:20px;box-shadow:0 1px 3px rgba(0,0,0,.04);}
+.prog-top{display:flex;justify-content:space-between;margin-bottom:10px;}
+.prog-title{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--text3);}
+.prog-pct{font-family:'Bebas Neue';font-size:18px;}
+.prog-track{height:18px;background:var(--bg);border-radius:9px;overflow:hidden;border:1px solid var(--border);}
+.prog-fill{height:100%;border-radius:9px;transition:width .4s cubic-bezier(.4,0,.2,1);}
+.prog-marks{position:relative;height:18px;margin-top:4px;}
+.prog-mark{position:absolute;font-size:9px;color:var(--text3);transform:translateX(-50%);}
+.prog-mark::before{content:'';position:absolute;top:-11px;left:50%;width:1px;height:6px;background:var(--border2);}
+
+/* PROXIMA */
+.prox-card{background:var(--card);border:1px solid var(--border);border-radius:12px;
+  padding:16px 20px;margin-bottom:20px;display:flex;align-items:center;gap:14px;
+  box-shadow:0 1px 3px rgba(0,0,0,.04);}
+.prox-icon{font-size:26px;}
+.prox-txt{flex:1;}
+.prox-label{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--text3);margin-bottom:3px;}
+.prox-desc{font-size:13px;font-weight:600;color:var(--text);}
+.prox-val{font-family:'Bebas Neue';font-size:20px;color:var(--green);}
+
+/* TABELA */
+.tab-card{background:var(--card);border:1px solid var(--border);border-radius:12px;
+  overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.04);}
+.tab-header{padding:13px 18px;background:var(--card2);border-bottom:1px solid var(--border);
+  display:flex;justify-content:space-between;align-items:center;}
+.tab-title{font-family:'Bebas Neue';font-size:15px;letter-spacing:2px;color:var(--text2);}
+.twrap{overflow-x:auto;}
+table{width:100%;border-collapse:collapse;font-size:13px;}
+thead th{position:sticky;top:0;z-index:1;}
+th{text-align:right;padding:9px 14px;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;
+  color:var(--text3);border-bottom:1px solid var(--border);background:var(--card2);}
+th:first-child{text-align:left;}
+td{padding:9px 14px;border-bottom:1px solid var(--border);text-align:right;}
+td:first-child{text-align:left;}
+tr:last-child td{border-bottom:none;}
+tr.ativa td{background:rgba(255,75,0,.05);font-weight:700;}
+tr.ativa td:first-child{border-left:3px solid var(--accent);padding-left:11px;}
+tr.futura td{color:var(--text3);}
+.tvb{font-family:'Bebas Neue';font-size:14px;}
+.tvacc{font-family:'Bebas Neue';font-size:14px;color:var(--accent);}
+
+/* GESTOR TABELA */
+.gestor-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;margin-bottom:20px;}
+.gcard{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px 16px;
+  box-shadow:0 1px 3px rgba(0,0,0,.04);}
+.gcard-nome{font-size:12px;font-weight:700;margin-bottom:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.gcard-fat{font-family:'Bebas Neue';font-size:20px;color:var(--accent);}
+.gcard-bar{height:4px;background:var(--bg);border-radius:2px;margin-top:6px;overflow:hidden;}
+.gcard-fill{height:100%;border-radius:2px;background:var(--accent);opacity:.6;}
+.gcard-pct{font-size:10px;color:var(--text3);margin-top:4px;}
+
+/* LOADING */
+.loading{text-align:center;padding:30px;color:var(--text3);}
+.spin{display:inline-block;width:18px;height:18px;border:2px solid var(--border2);
+  border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite;margin-right:8px;vertical-align:middle;}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* EMPTY */
+.empty{text-align:center;padding:32px;color:var(--text3);font-size:13px;}
+
+@media(max-width:600px){.kgrid{grid-template-columns:1fr 1fr}.faixas{flex-wrap:wrap}.faixa{min-width:calc(33% - 4px)}}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="loginScreen">
+  <div class="login-box">
+    <div class="login-logo">
+      <div class="lt">🏍 MotoChefe</div>
+      <div class="ls">Comissões & Metas</div>
+      <div class="lsub">Acompanhe seu faturamento e simule sua comissão</div>
+    </div>
+    <label class="ll">Usuário</label>
+    <select class="lsel" id="selUsuario">
+      <option value="">Selecione...</option>
+      <optgroup label="Vendedores">
+        <option value="Cesar Rodrigues">Cesar Rodrigues — Matriz</option>
+        <option value="Charles Carvalho">Charles Carvalho — Pouso Alegre</option>
+        <option value="Emanuel Paiva">Emanuel Paiva — Lavras</option>
+        <option value="Fernando Lopes">Fernando Lopes — Poços de Caldas</option>
+        <option value="Julia Nascimento">Julia Nascimento — Poços de Caldas</option>
+        <option value="Julia Sampaio">Julia Sampaio — Poços de Caldas</option>
+        <option value="Karla Souza Chagas">Karla Souza Chagas — Varginha</option>
+        <option value="Kawan Manso">Kawan Manso — Pouso Alegre</option>
+        <option value="Luiz Paulo Arouca">Luiz Paulo Arouca — Matriz</option>
+        <option value="Murilo Belo">Murilo Belo — Varginha</option>
+        <option value="Pablo Albinati">Pablo Albinati — Varginha</option>
+        <option value="Pedro Henrique de Carvalho Porto">Pedro Henrique — Pouso Alegre</option>
+        <option value="Rayssa Dayane Muniz Martins">Rayssa Martins — Poços de Caldas</option>
+        <option value="Tiago Souza Gomes">Tiago Souza Gomes — Lavras</option>
+      </optgroup>
+      <optgroup label="Gestão">
+        <option value="__gestor__">Gestor — Visão Geral</option>
+      </optgroup>
+    </select>
+    <label class="ll">Senha</label>
+    <input type="password" class="linp" id="inputSenha" placeholder="••••••" onkeydown="if(event.key==='Enter')doLogin()">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">
+      <input type="checkbox" id="lembrar" style="width:16px;height:16px;accent-color:#ff4b00;cursor:pointer">
+      <label for="lembrar" style="font-size:13px;color:var(--text2);cursor:pointer">Lembrar de mim</label>
+    </div>
+    <button class="lbtn" onclick="doLogin()">ACESSAR</button>
+    <div class="lerr" id="loginErr"></div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app">
+  <div class="topbar">
+    <div class="tlogo">MotoChefe</div>
+    <div style="width:1px;height:20px;background:rgba(255,255,255,.15)"></div>
+    <div class="ttitle">Simulador de Comissão</div>
+    <div class="tsp"></div>
+    <div class="tuser" id="topUser"></div>
+    <button class="tbtn" onclick="logout()">Sair</button>
+  </div>
+
+  <main>
+    <!-- CONTROLES -->
+    <div class="controles">
+      <div id="ctrlVendedor" style="display:none" class="ctrl-group">
+        <span class="ctrl-label">Vendedor</span>
+        <select class="ctrl-sel" id="selVendedor" onchange="buscarFaturamento()">
+          <option value="">Todos</option>
+        </select>
+      </div>
+      <div class="ctrl-group">
+        <span class="ctrl-label">Mês</span>
+        <select class="ctrl-sel" id="selMes" onchange="buscarFaturamento()">
+          <option value="1">Janeiro</option><option value="2">Fevereiro</option>
+          <option value="3" selected>Março</option><option value="4">Abril</option>
+          <option value="5">Maio</option><option value="6">Junho</option>
+          <option value="7">Julho</option><option value="8">Agosto</option>
+          <option value="9">Setembro</option><option value="10">Outubro</option>
+          <option value="11">Novembro</option><option value="12">Dezembro</option>
+        </select>
+      </div>
+      <div class="ctrl-group">
+        <span class="ctrl-label">Ano</span>
+        <select class="ctrl-sel" id="selAno" onchange="buscarFaturamento()">
+          <option value="2024">2024</option>
+          <option value="2025">2025</option>
+          <option value="2026" selected>2026</option>
+        </select>
+      </div>
+      <button class="ctrl-btn" onclick="buscarFaturamento()">↻ Atualizar</button>
+    </div>
+
+    <!-- ESTADO GESTOR: tabela todos os vendedores -->
+    <div id="gestorArea" style="display:none">
+      <div style="font-family:'Bebas Neue';font-size:16px;letter-spacing:2px;color:var(--text2);margin-bottom:12px">
+        Faturamento por Vendedor
+      </div>
+      <div class="gestor-grid" id="gestorGrid">
+        <div class="loading"><span class="spin"></span>Carregando...</div>
+      </div>
+    </div>
+
+    <!-- ESTADO VENDEDOR: simulador -->
+    <div id="vendedorArea">
+      <!-- CARD VENDEDOR -->
+      <div class="vcard" id="vcardVendedor">
+        <div class="vavatar" id="vAvatar">?</div>
+        <div class="vinfo">
+          <div class="vnome" id="vNome">—</div>
+          <div class="vloja" id="vLoja">—</div>
+          <div class="vmes" id="vMesInfo">—</div>
+        </div>
+        <div class="vfat">
+          <div class="vfat-label">Faturamento real</div>
+          <div class="vfat-val" id="vFat">R$ —</div>
+          <div class="vfat-qtd" id="vQtd">— motos</div>
+        </div>
+      </div>
+
+      <!-- SLIDER -->
+      <div class="slider-card">
+        <div class="slider-header">
+          <div>
+            <div class="slider-label">Faturamento simulado</div>
+            <div class="slider-val" id="sliderVal">R$ 0</div>
+            <div id="pctBadge" class="pct-badge" style="background:rgba(255,75,0,.1);color:var(--accent)">0%</div>
+          </div>
+          <div class="meta-box">
+            <div class="ml">Meta mensal</div>
+            <div class="mv">R$ 160.000</div>
+            <div style="font-size:11px;color:var(--text3);margin-top:3px">Mín: R$ 0</div>
+          </div>
+        </div>
+        <div class="range-wrap">
+          <div class="range-fill" id="rangeFill"></div>
+          <input type="range" id="slider" min="0" max="260000" step="1000" value="160000" oninput="onSlider(+this.value)">
+        </div>
+        <div class="range-labels">
+          <span>R$ 0</span><span>R$ 81k</span><span>R$ 162k ★</span><span>R$ 214k</span><span>R$ 260k</span>
+        </div>
+        <div class="faixas">
+          <div class="faixa f1" id="fx1"><div class="fl">Abaixo</div><div class="fp">&lt;70%</div></div>
+          <div class="faixa f2" id="fx2"><div class="fl">Básico</div><div class="fp">70–100%</div></div>
+          <div class="faixa f3" id="fx3"><div class="fl">Meta</div><div class="fp">100–110%</div></div>
+          <div class="faixa f4" id="fx4"><div class="fl">Prata</div><div class="fp">110–120%</div></div>
+          <div class="faixa f5" id="fx5"><div class="fl">Ouro</div><div class="fp">120–140%</div></div>
+          <div class="faixa f6" id="fx6"><div class="fl">Diamante</div><div class="fp">&gt;140%</div></div>
+        </div>
+      </div>
+
+      <!-- KPIS -->
+      <div class="kgrid">
+        <div class="kpi"><div class="kl">Comissão Base</div><div class="kv" id="kComissao" style="color:var(--blue)">—</div><div class="ks">0,5% sobre vendas</div></div>
+        <div class="kpi"><div class="kl">Premiação OTE</div><div class="kv" id="kPremio" style="color:var(--gold)">—</div><div class="ks" id="kPremioSub">—</div></div>
+        <div class="kpi dest"><div class="kl">💰 Total a Receber</div><div class="kv" id="kTotal" style="color:var(--accent)">—</div><div class="ks" id="kTotalPct">—</div></div>
+      </div>
+
+      <!-- PROGRESSO -->
+      <div class="prog-card">
+        <div class="prog-top">
+          <span class="prog-title">Atingimento de Meta</span>
+          <span class="prog-pct" id="progPct" style="color:var(--accent)">0%</span>
+        </div>
+        <div class="prog-track"><div class="prog-fill" id="progFill" style="width:0%;background:var(--accent)"></div></div>
+        <div class="prog-marks">
+          <div class="prog-mark" style="left:43.75%">70%</div>
+          <div class="prog-mark" style="left:62.5%">100%</div>
+          <div class="prog-mark" style="left:68.75%">110%</div>
+          <div class="prog-mark" style="left:75%">120%</div>
+          <div class="prog-mark" style="left:87.5%">140%</div>
+        </div>
+      </div>
+
+      <!-- PROXIMA -->
+      <div class="prox-card" id="proxCard">
+        <div class="prox-icon">🎯</div>
+        <div class="prox-txt">
+          <div class="prox-label">Próximo prêmio</div>
+          <div class="prox-desc" id="proxDesc">—</div>
+        </div>
+        <div class="prox-val" id="proxVal">—</div>
+      </div>
+
+      <!-- TABELA -->
+      <div class="tab-card">
+        <div class="tab-header">
+          <div class="tab-title">Tabela de Premiação Completa</div>
+          <div style="font-size:11px;color:var(--text3)">Meta: R$ 162.000 · Comissão: 0,5%</div>
+        </div>
+        <div class="twrap">
+          <table>
+            <thead><tr>
+              <th style="text-align:left">Vendas</th>
+              <th>% Meta</th>
+              <th>Prêmio</th>
+              <th>Acumulado</th>
+              <th>Comissão</th>
+              <th>Total</th>
+              <th>% s/ Vendas</th>
+            </tr></thead>
+            <tbody id="tabBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script>
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzAYDr_pArf5uSPiK0mOQP0K_BMHFEAOJ9xYxMSVBigoCpY_F69GjJlXmE9WOuQZOIn/exec';
+const META = 162000;
+const MIN = 0;
+const MAX = 260000;
+const MESES = ['','Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+
+// Senhas — não óbvias, mistura nome+ano+código
+const SENHAS = {
+  'Pablo Albinati':                  'PA@Moto26',
+  'Karla Souza Chagas':              'KS#Chefe7',
+  'Murilo Belo':                     'MB!Vrg2026',
+  'Julia Nascimento':                'JN*Poc831',
+  'Rayssa Dayane Muniz Martins':     'RM@Day526',
+  'Fernando Lopes':                  'FL#Poc77x',
+  'Julia Sampaio':                   'JS!Sam26k',
+  'Emanuel Paiva':                   'EP@Lav314',
+  'Tiago Souza Gomes':               'TG#Lav99z',
+  'Kawan Manso':                     'KM!Pso26m',
+  'Charles Carvalho':                'CC@Pso5k2',
+  'Pedro Henrique de Carvalho Porto':'PH#Pso826',
+  'Cesar Rodrigues':                 'CR@Mtz26x',
+  'Luiz Paulo Arouca':               'LP!Mtz77k',
+  '__gestor__':                      'Gest0r@MC26',
+};
+
+const LOJA_VENDEDOR = {
+  'Pablo Albinati':'MOTOCHEFE Varginha','Karla Souza Chagas':'MOTOCHEFE Varginha','Murilo Belo':'MOTOCHEFE Varginha',
+  'Julia Nascimento':'MOTOCHEFE Poços de Caldas','Rayssa Dayane Muniz Martins':'MOTOCHEFE Poços de Caldas',
+  'Fernando Lopes':'MOTOCHEFE Poços de Caldas','Julia Sampaio':'MOTOCHEFE Poços de Caldas',
+  'Emanuel Paiva':'ECOMOV LAV','Tiago Souza Gomes':'ECOMOV LAV',
+  'Kawan Manso':'ECOMOV Pouso Alegre','Charles Carvalho':'ECOMOV Pouso Alegre','Pedro Henrique de Carvalho Porto':'ECOMOV Pouso Alegre',
+  'Cesar Rodrigues':'ECOMOV MATRIZ','Luiz Paulo Arouca':'ECOMOV MATRIZ',
+};
+
+const TABELA = [
+  {v:112000,p:0,a:0},{v:122000,p:50,a:50},{v:132000,p:60,a:110},{v:142000,p:70,a:180},
+  {v:152000,p:80,a:260},{v:162000,p:800,a:1060},{v:172000,p:100,a:1160},{v:182000,p:120,a:1280},
+  {v:192000,p:140,a:1420},{v:202000,p:160,a:1580},{v:212000,p:180,a:1760},{v:222000,p:900,a:2660},
+  {v:232000,p:280,a:2940},{v:242000,p:300,a:3240},{v:252000,p:1000,a:4240},{v:262000,p:400,a:4640},
+  {v:272000,p:450,a:5090},{v:282000,p:500,a:5590},{v:292000,p:600,a:6190},{v:302000,p:1200,a:7390},
+  {v:312000,p:700,a:8090},{v:322000,p:800,a:8890},{v:332000,p:900,a:9790},{v:342000,p:1000,a:10790},
+  {v:352000,p:2000,a:12790},
+];
+
+let currentUser = null;
+let isGestor = false;
+let fatReal = 0;
+
+
+// Funções de cor global
+function lerpCor(c1,c2,t){
+  const h=s=>parseInt(s,16);
+  const r1=h(c1.slice(1,3)),g1=h(c1.slice(3,5)),b1=h(c1.slice(5,7));
+  const r2=h(c2.slice(1,3)),g2=h(c2.slice(3,5)),b2=h(c2.slice(5,7));
+  const r=Math.round(r1+(r2-r1)*t),g=Math.round(g1+(g2-g1)*t),b=Math.round(b1+(b2-b1)*t);
+  return '#'+[r,g,b].map(x=>x.toString(16).padStart(2,'0')).join('');
+}
+function pctToCor(p){
+  if(p<=0)   return '#dc2626';
+  if(p>=140) return '#16a34a';
+  if(p<70)  { const t=p/70;       return lerpCor('#dc2626','#f97316',t); }
+  if(p<100) { const t=(p-70)/30;  return lerpCor('#f97316','#eab308',t); }
+  if(p<120) { const t=(p-100)/20; return lerpCor('#eab308','#22c55e',t); }
+  const t=(p-120)/20; return lerpCor('#22c55e','#16a34a',t);
+}
+
+// ── LOGIN ──────────────────────────────────────────────────
+function doLogin(){
+  const usuario = document.getElementById('selUsuario').value;
+  const senha   = document.getElementById('inputSenha').value;
+  const err     = document.getElementById('loginErr');
+  if(!usuario){err.textContent='Selecione o usuário.';return;}
+  if(!senha){err.textContent='Digite a senha.';return;}
+  if(SENHAS[usuario] !== senha){err.textContent='Senha incorreta.';return;}
+  currentUser = usuario;
+  isGestor = usuario === '__gestor__';
+  err.textContent='';
+  document.getElementById('loginScreen').style.display='none';
+  document.getElementById('app').style.display='block';
+    // Salvar sessão
+  if(document.getElementById('lembrar')?.checked){
+    localStorage.setItem('mc_sim_session', JSON.stringify({u: document.getElementById('selUsuario').value, p: document.getElementById('inputSenha').value, ts: Date.now()}));
+  } else {
+    localStorage.removeItem('mc_sim_session');
+  }
+  initApp();
+}
+function logout(){
+  currentUser=null;isGestor=false;fatReal=0;
+  document.getElementById('loginScreen').style.display='flex';
+  document.getElementById('app').style.display='none';
+  document.getElementById('inputSenha').value='';
+  document.getElementById('selUsuario').value='';
+}
+
+// ── INIT ───────────────────────────────────────────────────
+function initApp(){
+  // Mês atual
+  const hoje = new Date();
+  document.getElementById('selMes').value = hoje.getMonth()+1;
+  document.getElementById('selAno').value = hoje.getFullYear();
+
+  if(isGestor){
+    document.getElementById('topUser').textContent = '👔 Gestor';
+    document.getElementById('gestorArea').style.display='block';
+    document.getElementById('vendedorArea').style.display='none';
+    document.getElementById('ctrlVendedor').style.display='flex';
+    // Popula select de vendedor
+    const sel = document.getElementById('selVendedor');
+    Object.keys(LOJA_VENDEDOR).sort((a,b)=>a.localeCompare(b,'pt-BR')).forEach(v=>{
+      const o=document.createElement('option');o.value=v;o.textContent=v;sel.appendChild(o);
+    });
+  } else {
+    document.getElementById('topUser').textContent = currentUser;
+    document.getElementById('gestorArea').style.display='none';
+    document.getElementById('vendedorArea').style.display='block';
+    document.getElementById('ctrlVendedor').style.display='none';
+    // Preenche card vendedor
+    const ini = currentUser.trim().split(' ').map(p=>p[0]).join('').substring(0,2).toUpperCase();
+    document.getElementById('vAvatar').textContent = ini;
+    document.getElementById('vNome').textContent = currentUser;
+    document.getElementById('vLoja').textContent = LOJA_VENDEDOR[currentUser]||'';
+  }
+  buscarFaturamento();
+}
+
+// ── BUSCAR FATURAMENTO ─────────────────────────────────────
+async function buscarFaturamento(){
+  const mes = parseInt(document.getElementById('selMes').value);
+  const ano = parseInt(document.getElementById('selAno').value);
+  const vendedor = isGestor
+    ? (document.getElementById('selVendedor').value || '')
+    : currentUser;
+
+  document.getElementById('vMesInfo').textContent = MESES[mes]+' '+ano;
+
+  // Usa getdata que já funciona em todos os outros arquivos
+  const loadingEl = isGestor && !vendedor
+    ? document.getElementById('gestorGrid')
+    : null;
+
+  if(loadingEl) loadingEl.innerHTML='<div class="loading"><span class="spin"></span>Buscando dados...</div>';
+  else { document.getElementById('vFat').textContent='R$ ...'; document.getElementById('vQtd').textContent='buscando...'; }
+
+  try{
+    const anoParam = ano !== 2026 ? `&ano=${ano}` : '';
+    const r = await fetch(`${APPS_SCRIPT_URL}?action=getdata${anoParam}`,{signal:AbortSignal.timeout(30000)});
+    const json = await r.json();
+    if(json.erro) throw new Error(json.erro);
+
+    // Filtra motos pelo mês
+    const motos = (json.motos||[]).filter(row=>{
+      const rawDate = row['MÊS']||row['Data de emissão']||'';
+      let mesRow=0;
+      if(rawDate instanceof Date){ mesRow=rawDate.getMonth()+1; }
+      else {
+        const s=String(rawDate);
+        if(s.includes('T')) mesRow=parseInt(s.substring(5,7));
+        else if(s.includes('/')) mesRow=parseInt(s.split('/')[1]);
+      }
+      return mesRow===mes;
+    });
+
+    // Agrupa por vendedor
+    const map={};
+    motos.forEach(row=>{
+      const nome=String(row['Nome']||'');
+      const valorRaw=row['Valor total'];
+      const valor=typeof valorRaw==='number'?valorRaw:parseFloat(String(valorRaw||'0').replace(/\./g,'').replace(',','.'))||0;
+      if(!map[nome]) map[nome]={total:0,qtd:0};
+      map[nome].total+=valor; map[nome].qtd++;
+    });
+
+    if(isGestor && !vendedor){
+      document.getElementById('gestorArea').style.display='block';
+      document.getElementById('vendedorArea').style.display='none';
+      renderGestor(map, mes, ano);
+      return;
+    }
+
+    // Vendedor específico
+    if(isGestor){
+      document.getElementById('gestorArea').style.display='none';
+      document.getElementById('vendedorArea').style.display='block';
+      const ini=vendedor.trim().split(' ').map(p=>p[0]).join('').substring(0,2).toUpperCase();
+      document.getElementById('vAvatar').textContent=ini;
+      document.getElementById('vNome').textContent=vendedor;
+      document.getElementById('vLoja').textContent=LOJA_VENDEDOR[vendedor]||'';
+    }
+
+    // Calcula total do vendedor
+    let totalVend=0, qtdVend=0;
+    Object.entries(map).forEach(([nome,d])=>{
+      if(nome.toLowerCase().includes(vendedor.toLowerCase().split(' ')[0])){
+        totalVend+=d.total; qtdVend+=d.qtd;
+      }
+    });
+
+    fatReal=totalVend;
+    document.getElementById('vFat').textContent=fmtR(fatReal);
+    document.getElementById('vQtd').textContent=qtdVend+' moto(s) no Bling';
+    const val=Math.max(0,Math.min(MAX,fatReal||0));
+    document.getElementById('slider').value=val;
+    atualizar(val);
+
+  }catch(e){
+    const msg=e.name==='AbortError'?'Timeout — tente novamente':e.message;
+    if(loadingEl) loadingEl.innerHTML=`<div class="empty">⚠ ${msg}</div>`;
+    else{ document.getElementById('vFat').textContent='—'; document.getElementById('vQtd').textContent='⚠ '+msg; }
+    atualizar(fatReal||0);
+  }
+}
+
+function renderGestor(todos, mes, ano){
+  const maxFat = Math.max(...Object.values(todos).map(v=>v.total),1);
+  const entries = Object.entries(todos).sort((a,b)=>a[0].localeCompare(b[0],'pt-BR'));
+  if(entries.length===0){
+    document.getElementById('gestorGrid').innerHTML='<div class="empty">Sem dados para '+MESES[mes]+'/'+ano+'</div>';
+    return;
+  }
+  document.getElementById('gestorGrid').innerHTML = entries.map(([nome,d])=>{
+    const pctMeta = d.total/META*100;
+    const cor = pctToCor(pctMeta);
+    const comissao = calcular(d.total).total;
+    return `<div class="gcard" style="cursor:pointer" onclick="selecionarVendedorGestor('${nome.replace(/'/g,"\\'")}')">
+      <div class="gcard-nome" title="${nome}">${nome}</div>
+      <div class="gcard-fat" style="color:${cor}">${fmtR(d.total)}</div>
+      <div class="gcard-bar"><div class="gcard-fill" style="width:${(d.total/maxFat*100).toFixed(0)}%;background:${cor}"></div></div>
+      <div class="gcard-pct">${pctMeta.toFixed(1)}% meta · ${d.qtd}un · comissão ${fmtR(comissao)}</div>
+    </div>`;
+  }).join('');
+}
+
+function selecionarVendedorGestor(nome){
+  document.getElementById('selVendedor').value=nome;
+  buscarFaturamento();
+}
+
+// ── CALCULAR ───────────────────────────────────────────────
+function calcular(vendas){
+  const comissao = vendas*0.005;
+  let idx=-1;
+  for(let i=TABELA.length-1;i>=0;i--){if(vendas>=TABELA[i].v){idx=i;break;}}
+  const acum = idx>=0?TABELA[idx].a:0;
+  return {comissao,acum,total:comissao+acum,pct:vendas/META*100,idx};
+}
+
+// ── ATUALIZAR TELA ─────────────────────────────────────────
+function atualizar(vendas){
+  const v = Math.max(MIN,Math.min(MAX,vendas));
+  const {comissao,acum,total,pct,idx} = calcular(v);
+
+  const cor = pctToCor(pct);
+  const fxId = pct<70?'fx1':pct<100?'fx2':pct<110?'fx3':pct<120?'fx4':pct<140?'fx5':'fx6';
+
+  // Slider
+  document.getElementById('sliderVal').textContent='R$ '+Math.round(v).toLocaleString('pt-BR');
+  const fillPct=(v-MIN)/(MAX-MIN)*100;
+  document.getElementById('rangeFill').style.width=fillPct+'%';
+
+  // Badge
+  const badge=document.getElementById('pctBadge');
+  badge.textContent=pct.toFixed(1).replace('.',',')+'% da meta';
+  badge.style.background=cor+'18';badge.style.color=cor;badge.style.border='1px solid '+cor+'40';
+
+  // Faixas
+  // Cores por faixa baseadas no % central de cada faixa
+  const FAIXA_PCT = {fx1:35, fx2:85, fx3:105, fx4:115, fx5:130, fx6:150};
+  ['fx1','fx2','fx3','fx4','fx5','fx6'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(!el) return;
+    const c = pctToCor(FAIXA_PCT[id]);
+    el.style.color = c;
+    el.style.borderColor = c+(el.id===fxId?'':'30');
+    el.style.background = c+(el.id===fxId?'18':'0a');
+    el.classList.toggle('ativa', id===fxId);
+  });
+
+  // KPIs
+  document.getElementById('kComissao').textContent=fmtR(comissao);
+  document.getElementById('kPremio').textContent=fmtR(acum);
+  document.getElementById('kPremioSub').textContent=acum>0?'prêmio acumulado OTE':'sem prêmio nesta faixa';
+  document.getElementById('kTotal').textContent=fmtR(total);
+  document.getElementById('kTotalPct').style.color=cor;
+  document.getElementById('kTotalPct').textContent=fmtPct(total/v*100)+' sobre vendas';
+
+  // Progresso
+  const progW=Math.min(pct/160*100,100);
+  document.getElementById('progFill').style.width=progW+'%';
+  document.getElementById('progFill').style.background=cor;
+  document.getElementById('progPct').textContent=pct.toFixed(2).replace('.',',')+'%';
+  document.getElementById('progPct').style.color=cor;
+
+  // Próxima
+  const prox=TABELA.find(l=>l.v>v);
+  if(prox){
+    const falta=prox.v-v;
+    const ganho=prox.a-acum;
+    document.getElementById('proxDesc').textContent='Faltam '+fmtR(falta)+' → +'+fmtR(ganho)+' de prêmio';
+    document.getElementById('proxVal').textContent=fmtR(prox.a+prox.v*0.005);
+  }else{
+    document.getElementById('proxDesc').textContent='🏆 Máximo atingido!';
+    document.getElementById('proxVal').textContent='';
+  }
+
+  // Tabela
+  document.getElementById('tabBody').innerHTML=TABELA.map((l,i)=>{
+    const com=l.v*0.005,tot=com+l.a,pv=tot/l.v*100,pm=l.v/META*100;
+    const isAt=i===idx,isFut=l.v>v;
+    return `<tr class="${isAt?'ativa':isFut?'futura':''}">
+      <td style="font-weight:600">${fmtR(l.v)}</td>
+      <td style="font-size:11px;color:var(--text3)">${pm.toFixed(0)}%</td>
+      <td class="tvb" style="color:${l.p>0?'var(--gold)':'var(--text3)'}">${l.p>0?fmtR(l.p):'—'}</td>
+      <td class="tvb" style="color:${l.a>0?'var(--blue)':'var(--text3)'}">${l.a>0?fmtR(l.a):'—'}</td>
+      <td>${fmtR(com)}</td>
+      <td class="tvacc">${fmtR(tot)}</td>
+      <td style="font-size:11px;color:${pv>1?'var(--green)':'var(--text3)'}">${fmtPct(pv)}</td>
+    </tr>`;
+  }).join('');
+
+  // Scroll linha ativa
+  if(idx>=0){
+    setTimeout(()=>{
+      const rows=document.getElementById('tabBody').querySelectorAll('tr');
+      if(rows[idx]) rows[idx].scrollIntoView({block:'nearest',behavior:'smooth'});
+    },200);
+  }
+}
+
+function onSlider(v){ atualizar(v); }
+function fmtR(v){ return 'R$ '+Math.round(v).toLocaleString('pt-BR'); }
+function fmtPct(v){ return v.toFixed(2).replace('.',',')+'%'; }
+
+
+</script>
+
+<script>
+window.addEventListener('load', () => {
+  try {
+    const m = {name:'MC Comissão',short_name:'Comissão',start_url:window.location.href,
+      display:'standalone',background_color:'#f2f1ef',theme_color:'#ff4b00',
+      icons:[{src:"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'%3E%3Crect width='192' height='192' rx='24' fill='%23ff4b00'/%3E%3Ctext x='96' y='130' text-anchor='middle' font-size='80' fill='white'%3E💰%3C/text%3E%3C/svg%3E",sizes:'192x192',type:'image/svg+xml'}]};
+    const el=document.getElementById('manifestLink');
+    if(el) el.href=URL.createObjectURL(new Blob([JSON.stringify(m)],{type:'application/json'}));
+  } catch(e){}
+});
+</script>
+
+<script>
+// Auto-login — roda após página carregar completamente
+window.addEventListener('load', function() {
+  try {
+    var s = JSON.parse(localStorage.getItem('mc_sim_session') || 'null');
+    if(s && s.u && s.p && (Date.now() - s.ts) < 7*24*60*60*1000) {
+      var sel = document.getElementById('selUsuario');
+      var inp = document.getElementById('inputSenha');
+      var chk = document.getElementById('lembrar');
+      if(sel && inp) {
+        sel.value = s.u;
+        inp.value = s.p;
+        if(chk) chk.checked = true;
+        doLogin();
+      }
+    }
+  } catch(e) { console.warn('Auto-login erro:', e); }
+});
+</script>
+
+</body>
+</html>
